@@ -1,0 +1,6 @@
+{
+  "name": "pxq-agents",
+  "version": "1.1.0",
+  "description": "Wazuh PXQ Planner, Tester and Reviewer agents with their skills, lessons and safety hooks.",
+  "author": { "name": "Wazuh Product Experience and Quality" }
+}

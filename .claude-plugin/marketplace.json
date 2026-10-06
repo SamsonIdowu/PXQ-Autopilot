@@ -1,0 +1,7 @@
+{
+  "name": "wazuh-pxq",
+  "owner": { "name": "Wazuh Product Experience and Quality" },
+  "plugins": [
+    { "name": "pxq-agents", "source": "./plugin", "description": "PXQ Planner, Tester and Reviewer agents for Claude Code." }
+  ]
+}

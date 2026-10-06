@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PXQ finding",
+  "type": "object",
+  "required": ["id", "title", "type", "severity", "service", "expected", "actual", "steps", "evidence", "repro_count", "confidence"],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "type": { "enum": ["functional-bug", "broken-flow", "content-error", "clarity", "terminology", "docs-product-mismatch", "findability", "workflow-complexity", "cross-product-inconsistency", "conversion-friction", "error-handling", "alert-noise", "missed-detection", "security"] },
+    "severity": { "enum": ["S1", "S2", "S3", "S4"] },
+    "service": { "type": "string" },
+    "surface": { "type": "string" },
+    "expected": { "type": "string" },
+    "actual": { "type": "string" },
+    "steps": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "repro_count": { "type": "integer", "minimum": 2 },
+    "related_issues": { "type": "array", "items": { "type": "string" } },
+    "suggested_fix": { "type": "string" },
+    "confidence": { "enum": ["high", "medium", "low"] }
+  }
+}

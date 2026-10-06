@@ -1,0 +1,9 @@
+# Where agents may send commands. Change only through a reviewed pull request.
+cidrs:
+  - 10.42.0.0/16      # cloud agent environments
+  - 10.43.0.0/16      # cloud agent clusters
+  - 192.168.64.0/24   # Multipass VMs on local agents (macOS default)
+  - 10.120.0.0/16     # Multipass VMs on local agents (Linux default bridge)
+hosts:
+  - pxq-agents.tailnet
+  - multipass          # local VM names resolve under .multipass

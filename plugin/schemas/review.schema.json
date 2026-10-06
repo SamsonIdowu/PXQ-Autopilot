@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PXQ review",
+  "type": "object",
+  "required": ["ticket", "verdict", "checks", "notes", "needs_human"],
+  "properties": {
+    "ticket": { "type": "string" },
+    "verdict": { "enum": ["pass", "fix-presentation", "rework"] },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding", "check", "ok"],
+        "properties": { "finding": { "type": "string" }, "check": { "type": "string" }, "ok": { "type": "boolean" }, "note": { "type": "string" } }
+      }
+    },
+    "severity_changes": { "type": "array", "items": { "type": "object", "properties": { "finding": { "type": "string" }, "from": { "type": "string" }, "to": { "type": "string" }, "why": { "type": "string" } } } },
+    "removed": { "type": "array", "items": { "type": "object", "properties": { "finding": { "type": "string" }, "why": { "type": "string" } } } },
+    "rework_instructions": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "string" },
+    "needs_human": { "type": "boolean" }
+  }
+}
