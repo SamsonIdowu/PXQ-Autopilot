@@ -15,6 +15,7 @@ cp "$ROOT"/schemas/*.json "$OUT/schemas/"
 cp -r "$ROOT"/learning/lessons "$OUT/learning/"
 cp "$ROOT"/.mcp.json "$OUT/.mcp.json"
 mkdir -p "$OUT/scripts/owner" && cp "$ROOT"/scripts/owner/pxq.sh "$OUT/scripts/owner/"
+mkdir -p "$OUT/scripts/automation" && cp "$ROOT"/scripts/automation/open_plan.py "$OUT/scripts/automation/"
 cat > "$OUT/.claude-plugin/plugin.json" <<JSON
 {
   "name": "pxq-agents",
