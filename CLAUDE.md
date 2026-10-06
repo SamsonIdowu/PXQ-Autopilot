@@ -21,6 +21,7 @@ Skills live in `.claude/skills/`. The Tester picks one by test type. `install` u
 ## Rules that don't bend
 
 - Never create, edit, comment on, label or close GitHub issues or pull requests. Never push. Never call `gh api`. People do those with `scripts/owner/pxq.sh`, so a person is behind every ticket and every approval. The guard hook blocks these anyway.
+- One exception. The admin's **PXQ automation** scheduled task opens approved plans and applies owners' reviews by running the scripts in `scripts/automation/`. It only acts on plans and reviews a person approved on the dashboard. No other session runs those scripts.
 - Never post to Slack from a test run. The owner shares the final report after they approve it.
 - Only reach hosts in `config/networks.yaml`, plus the public Wazuh and package hosts the guard allows. Ask the person if you need another one.
 - Use test accounts only. Never use real customer data, real payment cards or anyone's personal account.
