@@ -1,0 +1,14 @@
+# Run output stays on the agent machine. Drafts go to the owner's private drafts repo.
+runs/
+evals/*/out/
+learn-run.json
+plans/*.draft.json
+
+# Local secrets and caches
+.env
+.env.*
+.claude/settings.local.json
+__pycache__/
+*.pyc
+node_modules/
+.playwright-mcp/
