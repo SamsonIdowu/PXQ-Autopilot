@@ -37,6 +37,16 @@ scripts/setup/labels.sh
 
 It creates the `pxq:ticket`, `stage:*`, `needs:cloud`, `type:*`, `lane:*` and `learning` labels. It's safe to run again.
 
+### Dashboard
+
+The team dashboard is a Claude artifact owned by the admin. It reads a snapshot of GitHub, so nothing on it is sample data.
+
+1. The `dashboard-data` workflow builds `snapshot.json` on every ticket change and once an hour, and publishes it to the `dashboard-data` branch. Run it once by hand after your first push: Actions → dashboard-data → Run workflow.
+2. A Claude scheduled task in the admin's account, "PXQ dashboard sync", copies the snapshot into the dashboard once an hour. Press **Sync now** on the dashboard for a fresh copy. It works through the Claude Code Remote connector in the admin's claude.ai account.
+3. Share the dashboard with the team from its Share menu. Then link each seat to its Claude profile on the Team page.
+
+If the repo goes private, the scheduled task's cloud session needs read access to it, because it fetches the snapshot with git.
+
 ### Organization-wide Claude settings (recommended)
 
 Ask the Claude org owner to push managed settings that lock Claude Code sign-ins to the Wazuh Claude organization. That stops anyone from running tickets on a personal account by mistake. The plan doc, section 3, has the exact keys.

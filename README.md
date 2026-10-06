@@ -50,7 +50,8 @@ The Tester picks a skill by test type.
 | `learning/` | Lessons per agent, owner feedback, metrics |
 | `evals/` | Test cases that keep agents from repeating past mistakes |
 | `runner/` | The script each person's agent runs for a ticket |
-| `.github/workflows/` | `assign` (pick owner), `dispatch` (run tickets), `fallback` (cloud to local), `learn` (weekly), `validate` (checks on every pull request) |
+| `.github/workflows/` | `assign` (pick owner), `dispatch` (run tickets), `fallback` (cloud to local), `learn` (weekly), `validate` (checks on every pull request), `dashboard-data` (snapshot for the team dashboard) |
+| `scripts/dashboard/` | Builds the dashboard snapshot from GitHub |
 | `scripts/owner/pxq.sh` | The GitHub actions only a person takes. Open issues, approve, request changes, rerun. |
 | `scripts/setup/` | `labels.sh` for the admin, `doctor.sh` for every agent machine |
 | `docs/FIRST_RUN.md` | Setup and the first ticket, step by step |
@@ -63,7 +64,7 @@ The Tester picks a skill by test type.
 ## Try it
 
 ```bash
-python3 scripts/learn/aggregate_feedback.py --dir learning/feedback/examples   # metrics from sample feedback
+python3 scripts/learn/aggregate_feedback.py --dir tests/fixtures/feedback --out /tmp/metrics.json   # metrics from sample feedback
 python3 scripts/evals/run_evals.py --all --dry-run                            # check eval cases
 python3 tests/test_guard.py                                                   # guard hook blocks and allows the right commands
 scripts/setup/doctor.sh local                                                 # is this machine ready to run tickets?

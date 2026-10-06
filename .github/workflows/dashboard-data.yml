@@ -1,0 +1,50 @@
+name: dashboard-data
+# Builds the dashboard snapshot and publishes it to the dashboard-data branch.
+# A Claude scheduled task copies it into the dashboard. Pushes made here with the
+# workflow token don't start other workflows, so this can't loop.
+on:
+  issues:
+  issue_comment:
+  workflow_run:
+    workflows: [assign, dispatch, learn, validate]
+    types: [requested, completed]
+  push:
+    branches: [main]
+    paths: [config/**, plans/**, learning/**]
+  schedule:
+    - cron: "7 * * * *"   # hourly safety net
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: read
+  actions: read
+concurrency:
+  group: dashboard-data
+  cancel-in-progress: true
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the snapshot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/dashboard/snapshot.py --out "$RUNNER_TEMP/snapshot.json"
+      - name: Publish it to the dashboard-data branch if it changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          new=$(jq -r .hash "$RUNNER_TEMP/snapshot.json")
+          old=""
+          if git fetch -q origin dashboard-data 2>/dev/null; then
+            old=$(git show FETCH_HEAD:snapshot.json 2>/dev/null | jq -r .hash 2>/dev/null || true)
+          fi
+          if [[ "$new" == "$old" ]]; then echo "No change ($new)"; exit 0; fi
+          dir=$(mktemp -d); cp "$RUNNER_TEMP/snapshot.json" "$dir/"
+          cd "$dir"
+          git init -q && git checkout -q -b dashboard-data
+          git add snapshot.json
+          git -c user.name="pxq-dashboard" -c user.email="pxq-dashboard@users.noreply.github.com" commit -qm "Dashboard snapshot $new"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" dashboard-data
+          echo "Published $new"

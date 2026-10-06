@@ -15,6 +15,8 @@ jobs:
       - run: pip install --quiet pyyaml jsonschema
       - name: Guard hook blocks and allows the right commands
         run: python3 tests/test_guard.py
+      - name: Dashboard snapshot reads GitHub data correctly
+        run: python3 tests/test_snapshot.py
       - name: Config, workflows and JSON parse
         run: |
           python3 - <<'PY'
@@ -32,7 +34,7 @@ jobs:
           for f in glob.glob("schemas/*.json"):
               jsonschema.Draft202012Validator.check_schema(json.load(open(f)))
           fb = json.load(open("schemas/feedback.schema.json"))
-          for f in glob.glob("learning/feedback/**/*.json", recursive=True):
+          for f in glob.glob("learning/feedback/**/*.json", recursive=True) + glob.glob("tests/fixtures/feedback/*.json"):
               jsonschema.validate(json.load(open(f)), fb)
           print("Schemas and feedback OK")
           PY
