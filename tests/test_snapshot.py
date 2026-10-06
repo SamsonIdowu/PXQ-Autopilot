@@ -20,7 +20,7 @@ ROUTES = {
          "assignees": [{"login": "SamsonIdowu"}], "state": "closed", "html_url": "u2", "created_at": "2026-10-06T08:00:00Z",
          "updated_at": "2026-10-07T07:00:00Z", "closed_at": "2026-10-07T07:00:00Z", "comments": 1},
         {"number": 3, "title": "a PR", "pull_request": {}, "labels": [], "assignees": [], "state": "open"}],
-    "/repos/o/r/issues/2/comments": [{"body": "Approved by @SamsonIdowu. Final report: https://claude.ai/artifact/abc\n\n<!-- pxq-feedback -->\n```json\n" + json.dumps(FB) + "\n```"}],
+    "/repos/o/r/issues/2/comments": [{"body": "<!-- pxq-report v1 -->\n<!-- pxq-findings [{\"id\":\"F1\",\"title\":\"Docs step fails\",\"severity\":\"S2\",\"service\":\"Wazuh server\",\"type\":\"docs\"}] -->\n**Report from the agents.**\n\n---\n\n# PXQ-2 report\nBody", "html_url": "https://github.com/o/r/issues/2#c1", "created_at": "2026-10-07T06:00:00Z"}, {"body": "Approved by @SamsonIdowu. Final report: https://claude.ai/artifact/abc\n\n<!-- pxq-feedback -->\n```json\n" + json.dumps(FB) + "\n```"}],
     "/repos/o/r/actions/runs": {"workflow_runs": [
         {"id": 11, "path": ".github/workflows/dispatch.yml", "display_title": "ticket 1 for SamsonIdowu on local", "status": "in_progress",
          "conclusion": None, "html_url": "r11", "event": "workflow_dispatch", "created_at": "2026-10-07T08:01:00Z", "updated_at": "2026-10-07T08:02:00Z", "head_branch": "main"},
@@ -65,6 +65,8 @@ checks = [
     ("validate status", (s["workflows"]["validate"] or {}).get("conclusion") == "success"),
     ("missing labels listed", "stage:approved" in s["labels"]["missing"]),
     ("hash present", len(s["hash"]) == 16),
+    ("report parsed", (s["tickets"][1].get("report") or {}).get("severity", {}).get("S2") == 1 and snapshot.REPORTS.get(2, "").startswith("# PXQ-2 report")),
+    ("report findings kept", (s["tickets"][1].get("report") or {}).get("findings", [{}])[0].get("id") == "F1"),
     ("service names listed", "Wazuh indexer" in s["services"]),
     ("planner lessons listed", len(s["planner_lessons"]) >= 1),
 ]

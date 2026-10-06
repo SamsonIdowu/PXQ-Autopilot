@@ -26,6 +26,9 @@ DISPATCH_TITLE = re.compile(r"^ticket (\d+) for ([A-Za-z0-9-]+) on (cloud|local)
 TICKET_JSON = re.compile(r"```json\s*(\{.*?\})\s*```", re.S)
 FEEDBACK = re.compile(r"<!-- pxq-feedback -->\s*```json\s*(\{.*?\})\s*```", re.S)
 REPORT_URL = re.compile(r"Final report: (https://\S+)")
+REPORT_MARK = "<!-- pxq-report v1 -->"
+FINDINGS = re.compile(r"<!-- pxq-findings (.*?) -->", re.S)
+REPORTS = {}  # issue number -> report markdown, written next to the snapshot
 DIRECTIVE = re.compile(r"\*\*Directive\*\*\s+(\S+)")
 
 
@@ -164,13 +167,27 @@ def build(repo):
                "directive": (DIRECTIVE.search(i.get("body") or "") or [None, None])[1],
                "created": i["created_at"], "updated": i["updated_at"], "closed": iso(i.get("closed_at")),
                "comments": i.get("comments", 0), "valid_ticket": bool(t), "last_run": last_run_by_issue.get(i["number"])}
-        if stage == "approved" or (i["state"] == "closed" and i.get("comments")):
+        if i.get("comments") and (stage in ("owner", "changes", "approved", "rework", "review") or i["state"] == "closed"):
             try:
                 comments = get_all(f"repos/{repo}/issues/{i['number']}/comments", limit=100)
             except Exception:
                 comments = []
             for c in reversed(comments):
                 body = c.get("body") or ""
+                if "report" not in row and body.startswith(REPORT_MARK):
+                    fm = FINDINGS.search(body)
+                    try:
+                        found = json.loads(fm.group(1)) if fm else []
+                    except json.JSONDecodeError:
+                        found = []
+                    sev = {"S1": 0, "S2": 0, "S3": 0, "S4": 0}
+                    for f in found:
+                        if f.get("severity") in sev:
+                            sev[f["severity"]] += 1
+                    text = body.split("---", 1)[1].strip() if "\n---\n" in body else body
+                    REPORTS[i["number"]] = text
+                    row["report"] = {"url": c.get("html_url"), "at": c.get("created_at"), "findings": found[:30],
+                                     "severity": sev, "hash": hashlib.sha256(text.encode()).hexdigest()[:12]}
                 if "report_url" not in row:
                     m = REPORT_URL.search(body)
                     if m:
@@ -257,8 +274,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", "SamsonIdowu/PXQ-Autopilot"))
     ap.add_argument("--out", default="snapshot.json")
+    ap.add_argument("--reports-dir", help="also write each ticket's report as <issue>.md here")
     a = ap.parse_args()
     snap = build(a.repo)
+    if a.reports_dir:
+        os.makedirs(a.reports_dir, exist_ok=True)
+        for n, text in REPORTS.items():
+            with open(os.path.join(a.reports_dir, f"{n}.md"), "w", encoding="utf-8") as fh:
+                fh.write(text)
     with open(a.out, "w", encoding="utf-8") as fh:
         json.dump(snap, fh, indent=1, sort_keys=True)
     print(f"{len(snap['tickets'])} tickets, {len(snap['runs'])} runs, hash {snap['hash']} -> {a.out}")

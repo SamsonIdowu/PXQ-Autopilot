@@ -59,5 +59,8 @@ python3 scripts/scan_secrets.py "$RUN" >/dev/null || { echo "PXQ-PROGRESS phase=
 mkdir -p "$DRAFTS/$TICKET" && cp -r "$RUN"/. "$DRAFTS/$TICKET/"
 ( cd "$DRAFTS" && git add "$TICKET" && git commit -qm "$TICKET draft" && git push -q ) >/dev/null 2>&1 \
   || echo "PXQ-PROGRESS phase=warning reason=drafts-not-pushed (the draft is still in $DRAFTS on this machine)"
+# The reviewed report goes on the ticket, so the team sees it on the dashboard while it waits for the owner.
+python3 scripts/automation/post_report.py "$RUN" "$ISSUE" "$PXQ_REPO" >/dev/null \
+  || echo "PXQ-PROGRESS phase=warning reason=report-not-posted"
 label owner
-echo "PXQ-PROGRESS phase=awaiting-owner"
+echo "PXQ-PROGRESS phase=pending-review"
