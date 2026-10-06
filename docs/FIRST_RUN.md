@@ -16,8 +16,8 @@ If it has to stay public, at minimum turn on Settings → Actions → General �
 
 ### Repo settings
 
-1. **Collaborators.** Settings → Collaborators. Add Mario and Mauricio with the Write role.
-2. **Team file.** Put their GitHub logins in `config/team.yaml` and add them to `.github/CODEOWNERS`. The dispatch workflow won't run a ticket for anyone who isn't in the team file.
+1. **Teammates.** Invite each person from the dashboard's Team page. The page gives you one command, `scripts/owner/pxq.sh add-member`, that adds them as a repo collaborator and opens a pull request adding their seat to `config/team.yaml`. Merge it. The dispatch workflow won't run a ticket for anyone who isn't in the team file.
+2. **Code owners.** Once someone is onboarded, add them to `.github/CODEOWNERS` so they can approve agent and lesson changes.
 3. **Branch protection on `main`.** Settings → Branches → Add rule.
    - Require a pull request before merging.
    - Require review from Code Owners.
@@ -43,7 +43,7 @@ The team dashboard is a Claude artifact owned by the admin. It reads a snapshot 
 
 1. The `dashboard-data` workflow builds `snapshot.json` on every ticket change and once an hour, and publishes it to the `dashboard-data` branch. Run it once by hand after your first push: Actions → dashboard-data → Run workflow.
 2. A Claude scheduled task in the admin's account, "PXQ dashboard sync", copies the snapshot into the dashboard once an hour. Press **Sync now** on the dashboard for a fresh copy. It works through the Claude Code Remote connector in the admin's claude.ai account.
-3. Share the dashboard with the team from its Share menu. Then link each seat to its Claude profile on the Team page.
+3. Share the dashboard with each person you invite, from its Share menu. Inviting them on the Team page links their seat to their Claude profile.
 
 If the repo goes private, the scheduled task's cloud session needs read access to it, because it fetches the snapshot with git.
 
@@ -198,7 +198,7 @@ Paste the directive into Claude Code in the repo and say "plan this". Review the
 
 - [ ] Wazuh service names in `config/services.yaml` checked with Product
 - [ ] Lab ranges in `config/networks.yaml` match the real cloud agent network
-- [ ] Mario and Mauricio added to `config/team.yaml`, `CODEOWNERS` and as collaborators
+- [ ] Each teammate invited from the Team page, their add-member pull request merged, and their status there shows their agent
 - [ ] Every person passes `scripts/setup/doctor.sh`
 - [ ] The canary passed with no S1 or S2 findings
 - [ ] One full loop done, from issue to approved report to learning run

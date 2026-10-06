@@ -9,7 +9,7 @@
 /runner/               @SamsonIdowu
 /config/               @SamsonIdowu
 
-# Agent instructions, lessons and evals. Add Mario and Mauricio here so any teammate can approve.
+# Agent instructions, lessons and evals. Add teammates here once they're onboarded so any of them can approve.
 /.claude/agents/       @SamsonIdowu
 /.claude/skills/       @SamsonIdowu
 /learning/             @SamsonIdowu

@@ -1,8 +1,8 @@
-# Seats, lanes and links to Claude profiles. Admin-owned. Changes need review.
+# Team seats. Admin-owned. Changes need review.
+# Only the admin is here by default. Everyone else is invited from the dashboard's Team page,
+# which gives the admin the exact scripts/owner/pxq.sh add-member command that adds them here.
 # github must match the person's GitHub login exactly. The dispatch workflow refuses
 # to run a ticket for anyone who isn't listed here, and their runner label is pxq-<github login>.
 admin: samson
 people:
-  samson:   { name: Samson Idowu,        github: "SamsonIdowu", primary: use-operate,    backup: learn-discover, max_open: 6, claude_profile_id: null }
-  mario:    { name: Mario Mora,          github: "", primary: learn-discover, backup: buy-onboard,    max_open: 6, claude_profile_id: null }
-  mauricio: { name: Mauricio Fontebasso, github: "", primary: buy-onboard,    backup: use-operate,    max_open: 6, claude_profile_id: null }
+  samson: { name: Samson Idowu, github: "SamsonIdowu", primary: use-operate, backup: learn-discover, max_open: 6 }

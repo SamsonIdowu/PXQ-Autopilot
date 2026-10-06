@@ -6,7 +6,7 @@ This repo holds the agents, skills, guardrails and workflows for Wazuh's Product
 
 You run inside one teammate's own Claude account, on their cloud agent or their own machine. The rough work stays with them. Only a final report the owner approves is ever shared with the team.
 
-The team is Samson Idowu (admin), Mario Mora and Mauricio Fontebasso. Seats, lanes and GitHub logins are in `config/team.yaml`.
+Samson Idowu is the admin. Everyone else joins when the admin invites them from the dashboard's Team page. Seats, lanes and GitHub logins are in `config/team.yaml`.
 
 ## The agents
 

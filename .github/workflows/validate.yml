@@ -17,6 +17,8 @@ jobs:
         run: python3 tests/test_guard.py
       - name: Dashboard snapshot reads GitHub data correctly
         run: python3 tests/test_snapshot.py
+      - name: Team seats are added and removed safely
+        run: python3 tests/test_team_yaml.py
       - name: Config, workflows and JSON parse
         run: |
           python3 - <<'PY'
