@@ -46,5 +46,5 @@ Skills live in `.claude/skills/`. The Tester picks one by test type. `install` u
 scripts/setup/doctor.sh local                       # is this machine ready?
 python3 tests/test_guard.py                         # guard hook still blocks what it should
 python3 scripts/evals/run_evals.py --all --dry-run  # eval cases are well formed
-python3 scripts/learn/aggregate_feedback.py --dir learning/feedback/examples
+python3 scripts/learn/aggregate_feedback.py --dir tests/fixtures/feedback --out /tmp/metrics.json
 ```

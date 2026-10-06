@@ -14,7 +14,7 @@ The agents use Claude models as they are. Nobody retrains a model. The agents ge
 
 ## Where the signals come from
 
-1. **Owner feedback.** When owners review a report, they tag every finding as confirmed, false positive, wrong severity, duplicate or unclear, and they note anything the agents missed. The `pxq-review` skill saves this to `learning/feedback/<month>/<ticket>.json`. It holds tags and short reasons only, never draft evidence.
+1. **Owner feedback.** When owners review a report, they tag every finding as confirmed, false positive, wrong severity, duplicate or unclear, and they note anything the agents missed. The owner's approve command saves it on the ticket, and the weekly learning run copies it to `learning/feedback/<month>/<ticket>.json`. It holds tags and short reasons only, never draft evidence. Sample feedback for tests lives in `tests/fixtures/feedback/`, so it never counts toward real metrics.
 2. **Reviewer decisions.** These are rework requests and removed findings.
 3. **Outcomes upstream.** These are accepted, won't fix, and fixed and verified.
 4. **Canaries.** Known-good installs should pass. Any finding on them is probably a false positive.
