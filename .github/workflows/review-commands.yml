@@ -1,0 +1,41 @@
+name: review-commands
+# Lets a ticket's owner finish their review from GitHub.
+#   /approve                    marks the ticket Done and closes it
+#   /changes <what to change>   sends it back to their agent
+# Only the person the ticket is assigned to can use these.
+on:
+  issue_comment:
+    types: [created]
+permissions:
+  issues: write
+  actions: write
+  contents: read
+jobs:
+  review:
+    if: >-
+      !github.event.issue.pull_request &&
+      contains(github.event.issue.labels.*.name, 'pxq:ticket') &&
+      (startsWith(github.event.comment.body, '/approve') || startsWith(github.event.comment.body, '/changes'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply the owner's decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          BODY: ${{ github.event.comment.body }}
+          ASSIGNEES: ${{ join(github.event.issue.assignees.*.login, ' ') }}
+        run: |
+          if ! tr ' ' '\n' <<<"$ASSIGNEES" | grep -qix "$COMMENTER"; then
+            gh issue comment "$ISSUE" --body "Only the ticket's owner can approve or request changes."; exit 0
+          fi
+          first=$(head -n1 <<<"$BODY")
+          if [[ "$first" == /approve* ]]; then
+            python3 scripts/automation/apply_review.py --issue "$ISSUE" --decision approve --by "@$COMMENTER" \
+              || gh issue comment "$ISSUE" --body "Couldn't approve. The ticket must be pending review."
+          else
+            note="${BODY#/changes}"
+            python3 scripts/automation/apply_review.py --issue "$ISSUE" --decision changes --by "@$COMMENTER" --note "$note" \
+              || gh issue comment "$ISSUE" --body "Couldn't request changes. The ticket must be pending review."
+          fi

@@ -19,6 +19,8 @@ jobs:
         run: python3 tests/test_snapshot.py
       - name: Team seats are added and removed safely
         run: python3 tests/test_team_yaml.py
+      - name: Automation opens tickets and applies reviews correctly
+        run: python3 tests/test_automation.py
       - name: Config, workflows and JSON parse
         run: |
           python3 - <<'PY'

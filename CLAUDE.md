@@ -37,7 +37,8 @@ Skills live in `.claude/skills/`. The Tester picks one by test type. `install` u
 | `evals/` | Cases that keep agents from repeating past mistakes |
 | `plans/` | Approved plans waiting to become issues |
 | `runs/` | One folder per ticket run. Ignored by git. |
-| `runner/run-ticket.sh` | What the GitHub runner calls for each ticket |
+| `runner/run-ticket.sh` | What the GitHub runner calls for each ticket. It posts the reviewed report to the ticket. |
+| `scripts/automation/` | What the PXQ automation task runs between the dashboard and GitHub |
 | `docs/FIRST_RUN.md` | Setup and first ticket, step by step |
 
 ## Handy commands

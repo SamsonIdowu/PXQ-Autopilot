@@ -6,12 +6,12 @@ Agents, skills, hooks and workflows for Wazuh's Product Experience and Quality t
 
 ## How a ticket moves
 
-1. A person pastes a directive into Claude Code and says "plan this". The Planner writes `plans/<directive>.json`.
-2. The person approves it and runs `scripts/owner/pxq.sh open-issues plans/<directive>.json`.
-3. The `assign` workflow picks an owner by lane and load and starts the ticket on their cloud agent.
-4. If no cloud agent picks it up in 10 minutes, `fallback` moves it to the owner's local agent. Tickets marked `needs:cloud` wait instead.
-5. On the owner's runner, the Tester runs it in their Claude account, then the Reviewer checks it. Only progress lines reach the shared job log. Drafts go to the owner's private `pxq-drafts` repo.
-6. The owner says "review PXQ-###" in Claude Code, tags each finding and approves. The final report goes to the channel. The owner's approve command saves the tags on the ticket.
+1. The admin gives a directive on the dashboard's Directives page, as pasted text or a document.
+2. The **PXQ automation** task runs the Planner agent. It plans deliverables and tickets and picks an owner for each from the team.
+3. The admin approves the plan, or it's approved automatically when **Auto-approve plans** is on. The automation opens the tickets on GitHub, assigned to their owners.
+4. Each assignment starts the owner's **Tester** agent on their own runner and Claude account. If no cloud agent picks it up in 10 minutes, `fallback` moves it to their local agent. Tickets marked `needs:cloud` wait instead.
+5. The **Reviewer** agent checks the draft. The runner posts the final report to the ticket, and the ticket moves to **Pending review**. Evidence and logs stay on the owner's machine.
+6. The owner reads the report on the dashboard, tags each finding and approves it, or comments `/approve` on GitHub. The ticket closes as **Done**.
 7. Every Monday, `learn` turns those tags into proposed lessons and eval cases as a pull request for a person to merge.
 
 ## The three agents
@@ -50,8 +50,9 @@ The Tester picks a skill by test type.
 | `learning/` | Lessons per agent, owner feedback, metrics |
 | `evals/` | Test cases that keep agents from repeating past mistakes |
 | `runner/` | The script each person's agent runs for a ticket |
-| `.github/workflows/` | `assign` (pick owner), `dispatch` (run tickets), `fallback` (cloud to local), `learn` (weekly), `validate` (checks on every pull request), `dashboard-data` (snapshot for the team dashboard) |
+| `.github/workflows/` | `assign` (pick owner), `dispatch` (run tickets), `fallback` (cloud to local), `learn` (weekly), `validate` (checks on every pull request), `dashboard-data` (snapshot for the team dashboard), `review-commands` (`/approve` and `/changes` on tickets) |
 | `scripts/dashboard/` | Builds the dashboard snapshot from GitHub |
+| `scripts/automation/` | What the PXQ automation task runs: plan checks, opening tickets, applying reviews, posting reports, dashboard sync |
 | `scripts/owner/pxq.sh` | The GitHub actions only a person takes. Open issues, approve, request changes, rerun. |
 | `scripts/setup/` | `labels.sh` for the admin, `doctor.sh` for every agent machine |
 | `docs/FIRST_RUN.md` | Setup and the first ticket, step by step |

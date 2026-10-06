@@ -25,40 +25,10 @@ stage() {  # swap the stage:* label
 
 case "$cmd" in
   open-issues)
-    plan="${1:?path to plans/<directive>.json}"
+    plan="${1:?path to the plan .json}"
     root="$(cd "$(dirname "$0")/../.." && pwd)"
-    python3 - "$plan" "$REPO" "$root/config/team.yaml" <<'PY'
-import json, re, subprocess, sys
-plan, repo = json.load(open(sys.argv[1], encoding="utf-8")), sys.argv[2]
-seated = {m.group(1).lower(): m.group(1) for l in open(sys.argv[3], encoding="utf-8") if (m := re.search(r'github:\s*"([^"]+)"', l))}
-existing = "\n".join(i["body"] for i in json.loads(subprocess.run(
-    ["gh", "issue", "list", "--repo", repo, "--label", "pxq:ticket", "--state", "all", "--limit", "1000", "--json", "body"],
-    capture_output=True, text=True, check=True).stdout))
-made = 0
-for t in plan["tickets"]:
-    marker = f'"key": "{t["key"]}"'
-    if marker in existing:
-        print(f'skip {t["key"]} (already open)'); continue
-    svc = ", ".join(t["services"])
-    title = f'{svc} · {t["title"]}'
-    body = ("```json\n" + json.dumps(t, indent=2) + "\n```\n\n"
-            f'**Directive** {plan.get("directive_id", "")}  \n**Deliverable** {t["deliverable"]}  \n'
-            f'**Services** {svc}  \n**Test type** {t["test_type"]}  \n**Lane** {t["lane"]}  \n'
-            f'**Needs cloud agent** {"yes" if t["needs_cloud"] else "no"}\n\n'
-            "**Acceptance**\n" + "\n".join(f"- {a}" for a in t["acceptance"]) + "\n"
-            + (f'\n**Why this owner** {t["assign_reason"]}\n' if t.get("assign_reason") else ""))
-    labels = ["pxq:ticket", f'type:{t["test_type"]}', f'lane:{t["lane"]}'] + (["needs:cloud"] if t["needs_cloud"] else [])
-    args = ["gh", "issue", "create", "--repo", repo, "--title", title, "--body", body]
-    for l in labels: args += ["--label", l]
-    who = seated.get(str(t.get("assignee") or "").lower())
-    if who:
-        args += ["--assignee", who]   # the assigned event starts it on their agent
-    elif t.get("assignee"):
-        print(f'{t["key"]}: {t["assignee"]} has no seat in team.yaml, so the assign workflow will pick an owner')
-    url = subprocess.run(args, capture_output=True, text=True, check=True).stdout.strip()
-    print(f'{t["key"]} -> {url}'); made += 1
-print(f"Opened {made} issue(s). Tickets with an owner start on their agent now. The assign workflow picks owners for the rest.")
-PY
+    PXQ_REPO="$REPO" python3 "$root/scripts/automation/open_plan.py" "$plan" >/dev/null
+    echo "Done. Tickets with an owner start on their agent now. The assign workflow picks owners for the rest."
     ;;
   approve)
     issue="${1:?issue number}"; fb="${2:?feedback.json}"; url="${3:?final report artifact URL}"

@@ -37,15 +37,22 @@ scripts/setup/labels.sh
 
 It creates the `pxq:ticket`, `stage:*`, `needs:cloud`, `type:*`, `lane:*` and `learning` labels. It's safe to run again.
 
-### Dashboard
+### Dashboard and automation
 
-The team dashboard is a Claude artifact owned by the admin. It reads a snapshot of GitHub, so nothing on it is sample data.
+The team dashboard is a Claude artifact owned by the admin. A scheduled task in the admin's Claude account, **PXQ automation**, does the work between the dashboard and GitHub.
 
-1. The `dashboard-data` workflow builds `snapshot.json` on every ticket change and once an hour, and publishes it to the `dashboard-data` branch. Run it once by hand after your first push: Actions → dashboard-data → Run workflow.
-2. A Claude scheduled task in the admin's account, "PXQ dashboard sync", copies the snapshot into the dashboard once an hour. Press **Sync now** on the dashboard for a fresh copy. It works through the Claude Code Remote connector in the admin's claude.ai account.
-3. Share the dashboard with each person you invite, from its Share menu. Inviting them on the Team page links their seat to their Claude profile.
+- It runs the Planner on directives submitted on the Directives page, as pasted text or a document.
+- It opens approved tickets on GitHub, assigned to the owners the Planner picked. With **Auto-approve plans** on, it opens them straight after planning.
+- It applies owners' approvals from the dashboard, which marks tickets Done.
+- It copies GitHub's state onto the dashboard. The `dashboard-data` workflow builds that snapshot, with each ticket's report, on every ticket change.
 
-If the repo goes private, the scheduled task's cloud session needs read access to it, because it fetches the snapshot with git.
+It runs once an hour, and right away when the admin submits a directive, approves a plan or presses **Sync now**.
+
+1. **Give the automation access to the repo.** In claude.ai, open Scheduled tasks, then PXQ automation, and add the `SamsonIdowu/PXQ-Autopilot` repository with write access. Without it, the Planner still plans, but tickets have to be opened by hand from the Directives page. The dashboard's Setup page shows whether access works.
+2. **Run the feed once** after your first push: Actions → dashboard-data → Run workflow.
+3. **Share the dashboard** with each person you invite, at Contributor level ("Can use") so they can approve their own reports. Viewers can only read.
+
+Owners can also finish a review on GitHub by commenting `/approve` or `/changes <what to change>` on their ticket. That takes effect immediately.
 
 ### Organization-wide Claude settings (recommended)
 
