@@ -1,0 +1,54 @@
+name: validate
+# Runs on GitHub's own machines, never on a teammate's runner, so pull requests from
+# anyone can't execute code on PXQ agent machines.
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyyaml jsonschema
+      - name: Guard hook blocks and allows the right commands
+        run: python3 tests/test_guard.py
+      - name: Config, workflows and JSON parse
+        run: |
+          python3 - <<'PY'
+          import glob, json, yaml
+          for f in glob.glob("config/*.yaml") + glob.glob(".github/workflows/*.yml"):
+              yaml.safe_load(open(f))
+          for f in glob.glob("**/*.json", recursive=True) + [".mcp.json", ".claude/settings.json", ".claude-plugin/marketplace.json"]:
+              json.load(open(f))
+          print("All YAML and JSON parse")
+          PY
+      - name: Schemas are valid and sample feedback matches
+        run: |
+          python3 - <<'PY'
+          import glob, json, jsonschema
+          for f in glob.glob("schemas/*.json"):
+              jsonschema.Draft202012Validator.check_schema(json.load(open(f)))
+          fb = json.load(open("schemas/feedback.schema.json"))
+          for f in glob.glob("learning/feedback/**/*.json", recursive=True):
+              jsonschema.validate(json.load(open(f)), fb)
+          print("Schemas and feedback OK")
+          PY
+      - name: Agents and skills have frontmatter
+        run: |
+          for f in .claude/agents/*.md .claude/skills/*/SKILL.md; do
+            head -1 "$f" | grep -qx -- '---' || { echo "$f has no frontmatter"; exit 1; }
+            if ! grep -q '^name:' "$f" || ! grep -q '^description:' "$f"; then echo "$f needs name and description"; exit 1; fi
+          done
+      - name: Eval cases are well formed
+        run: python3 scripts/evals/run_evals.py --all --dry-run
+      - name: Shell scripts
+        run: shellcheck -S error runner/*.sh scripts/**/*.sh
+      - name: Plugin copy matches the repo
+        run: |
+          scripts/plugin/build.sh
+          git diff --exit-code -- plugin/ || { echo "Run scripts/plugin/build.sh and commit plugin/"; exit 1; }
+      - name: No secrets committed
+        run: python3 scripts/scan_secrets.py .

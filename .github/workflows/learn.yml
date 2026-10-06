@@ -1,0 +1,40 @@
+name: learn
+# Weekly learning run. Proposes lesson, skill and eval changes as a pull request.
+# Nothing changes for the agents until a person reviews and merges that pull request.
+# Needs repo setting: Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
+on:
+  schedule:
+    - cron: "15 6 * * 1"   # Mondays 06:15 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+jobs:
+  weekly-learning:
+    runs-on: [self-hosted, pxq-admin]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect owner feedback from approved tickets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/learn/export_feedback.py --days 7
+      - name: Measure
+        run: python3 scripts/learn/aggregate_feedback.py --since 7d
+      - name: Propose lessons, add eval cases, run evals
+        run: |
+          git switch -c "learn/$(date +%F)"
+          claude -p "Use the pxq-learn skill for the past 7 days. Edit only learning/, evals/ and .claude/skills/." \
+            --allowedTools "$(cat runner/allowed-tools.txt)" --mcp-config .mcp.json \
+            --output-format json --max-turns 200 > learn-run.json
+      - name: Open a pull request for people to approve
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add learning evals .claude/skills
+          git diff --cached --quiet && { echo "Nothing to propose this week"; exit 0; }
+          git -c user.name="pxq-learn" -c user.email="pxq-learn@users.noreply.github.com" commit -m "Weekly learning $(date +%F)"
+          git push -u origin HEAD
+          [[ -f learning/metrics/pr-body.md ]] || echo "Weekly learning run. See learning/metrics/latest.json." > learning/metrics/pr-body.md
+          gh pr create --title "Weekly learning $(date +%F)" --body-file learning/metrics/pr-body.md --label learning

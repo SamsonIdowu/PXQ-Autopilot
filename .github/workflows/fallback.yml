@@ -1,0 +1,33 @@
+name: fallback
+# Sends a ticket to its owner's local agent when no cloud agent has picked it up in time.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+permissions:
+  actions: write
+  issues: read
+  contents: read
+jobs:
+  reroute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-route waiting cloud jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WAIT_MINUTES: ${{ vars.PXQ_FALLBACK_MINUTES || '10' }}
+        run: |
+          now=$(date +%s)
+          gh run list --workflow dispatch.yml --status queued --json databaseId,displayTitle,createdAt --limit 50 \
+            | jq -c '.[]' | while read -r run; do
+              title=$(jq -r .displayTitle <<<"$run")
+              [[ "$title" =~ ^ticket\ ([0-9]+)\ for\ ([A-Za-z0-9-]+)\ on\ cloud$ ]] || continue
+              issue="${BASH_REMATCH[1]}"; owner="${BASH_REMATCH[2]}"
+              age=$(( (now - $(date -d "$(jq -r .createdAt <<<"$run")" +%s)) / 60 ))
+              (( age >= WAIT_MINUTES )) || continue
+              gh issue view "$issue" --json labels -q '.labels[].name' | grep -qx 'needs:cloud' && continue
+              gh run cancel "$(jq -r .databaseId <<<"$run")"
+              gh workflow run dispatch.yml -f issue="$issue" -f owner="$owner" -f agent=local
+              echo "Ticket $issue moved to $owner's local agent after $age minutes"
+            done

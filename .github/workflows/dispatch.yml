@@ -1,0 +1,35 @@
+name: dispatch
+run-name: "ticket ${{ github.event.issue.number || inputs.issue }} for ${{ github.event.assignee.login || inputs.owner }} on ${{ inputs.agent || 'cloud' }}"
+on:
+  issues:
+    types: [assigned]
+  workflow_dispatch:
+    inputs:
+      issue: { description: Issue number, required: true }
+      owner: { description: Owner's GitHub username, required: true }
+      agent: { description: cloud or local, required: true, default: local }
+permissions:
+  issues: write
+  contents: read
+concurrency:
+  group: ticket-${{ github.event.issue.number || inputs.issue }}
+jobs:
+  run-ticket:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'pxq:ticket')
+    runs-on: [self-hosted, "pxq-${{ github.event.assignee.login || inputs.owner }}", "${{ inputs.agent || 'cloud' }}"]
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the assignee is on the team
+        env:
+          LOGIN: ${{ github.event.assignee.login || inputs.owner }}
+        run: |
+          if ! grep -q "github: \"$LOGIN\"" config/team.yaml; then
+            echo "$LOGIN isn't in config/team.yaml"; exit 1
+          fi
+      - name: Run the ticket in the owner's Claude account
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+          PXQ_AGENT: ${{ inputs.agent || 'cloud' }}
+        run: ./runner/run-ticket.sh "$ISSUE"

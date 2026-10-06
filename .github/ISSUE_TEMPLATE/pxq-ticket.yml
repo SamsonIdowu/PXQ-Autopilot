@@ -1,0 +1,37 @@
+name: PXQ test ticket
+description: One test for one owner's agent. Most tickets come from the planner. Use this for a one-off.
+title: "<Wazuh services> · <what is tested>"
+labels: ["pxq:ticket"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The JSON below is what the agent reads. Keep it valid. The assign workflow picks an owner by lane and load,
+        then starts the ticket on their cloud agent. Don't assign anyone here unless you mean to.
+  - type: textarea
+    id: ticket
+    attributes:
+      label: Ticket
+      render: json
+      value: |
+        {
+          "key": "ONEOFF-001",
+          "deliverable": "D1.1",
+          "title": "AIO install from the 5.0 quickstart",
+          "services": ["Wazuh server", "Wazuh indexer", "Wazuh dashboard"],
+          "test_type": "install",
+          "lane": "use-operate",
+          "needs_cloud": false,
+          "docs_urls": ["https://documentation.wazuh.com/current/quickstart.html"],
+          "steps": ["Create a fresh Ubuntu 24.04 environment", "Follow the quickstart exactly", "Run the post-install checks"],
+          "acceptance": ["Install completes", "Dashboard login works"],
+          "evidence": ["Command logs per step", "Dashboard screenshot"],
+          "out_of_scope": []
+        }
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the owner
+      description: Anything the agent shouldn't need but a person might.

@@ -1,0 +1,66 @@
+name: assign
+# Picks an owner for each new PXQ ticket by lane and load, then starts it on their cloud agent.
+# A bot assignment doesn't fire the dispatch workflow on its own, so this one starts it directly.
+# If a person reassigns a ticket by hand later, dispatch.yml picks that up from the assigned event.
+on:
+  issues:
+    types: [opened, labeled]
+permissions:
+  issues: write
+  actions: write
+  contents: read
+concurrency:
+  group: assign-${{ github.event.issue.number }}
+jobs:
+  assign:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'pxq:ticket') &&
+      github.event.issue.assignees[0] == null &&
+      (github.event.action == 'opened' || github.event.label.name == 'pxq:ticket')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyyaml
+      - name: Read the ticket and pick an owner
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          # opened and labeled can both fire for one new issue. Check live state so it's assigned once.
+          if [[ -n "$(gh issue view "$ISSUE" --json assignees -q '.assignees[].login')" ]]; then
+            echo "Already assigned. Nothing to do."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          gh issue view "$ISSUE" --json body -q .body > body.md
+          python3 - body.md ticket.json <<'PY'
+          import json, re, sys
+          body = open(sys.argv[1], encoding="utf-8").read()
+          m = re.search(r"```json\s*(\{.*?\})\s*```", body, re.S)
+          if not m:
+              sys.exit("The issue body has no ticket JSON block.")
+          json.dump(json.loads(m.group(1)), open(sys.argv[2], "w"), indent=2)
+          PY
+          load=$(gh issue list --label pxq:ticket --state open --limit 500 --json assignees \
+                   -q '[.[].assignees[].login] | group_by(.) | map({(.[0]): length}) | add // {}')
+          owner=$(python3 scripts/assign/pick_owner.py --ticket ticket.json --load "$load")
+          needs_cloud=$(jq -r '.needs_cloud // false' ticket.json)
+          echo "owner=$owner" >> "$GITHUB_OUTPUT"
+          echo "needs_cloud=$needs_cloud" >> "$GITHUB_OUTPUT"
+          echo "Open tickets per person: $load. Picked: ${owner:-nobody}"
+      - name: Nobody has room
+        if: steps.pick.outputs.skip != 'true' && steps.pick.outputs.owner == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: gh issue edit "$ISSUE" --add-label stage:unassigned
+      - name: Assign and start on the owner's cloud agent
+        if: steps.pick.outputs.skip != 'true' && steps.pick.outputs.owner != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+          OWNER: ${{ steps.pick.outputs.owner }}
+          NEEDS_CLOUD: ${{ steps.pick.outputs.needs_cloud }}
+        run: |
+          gh issue edit "$ISSUE" --add-assignee "$OWNER" --add-label stage:assigned
+          if [[ "$NEEDS_CLOUD" == "true" ]]; then gh issue edit "$ISSUE" --add-label needs:cloud; fi
+          gh workflow run dispatch.yml -f issue="$ISSUE" -f owner="$OWNER" -f agent=cloud

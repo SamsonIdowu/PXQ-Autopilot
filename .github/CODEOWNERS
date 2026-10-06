@@ -1,0 +1,16 @@
+# Who must approve changes. Add each teammate's GitHub username once they're collaborators.
+# Branch protection on main must have "Require review from Code Owners" turned on for this to bite.
+
+# Anything that decides what runs on everyone's machine needs the admin.
+/.github/              @SamsonIdowu
+/.claude/hooks/        @SamsonIdowu
+/.claude/settings.json @SamsonIdowu
+/.mcp.json             @SamsonIdowu
+/runner/               @SamsonIdowu
+/config/               @SamsonIdowu
+
+# Agent instructions, lessons and evals. Add Mario and Mauricio here so any teammate can approve.
+/.claude/agents/       @SamsonIdowu
+/.claude/skills/       @SamsonIdowu
+/learning/             @SamsonIdowu
+/evals/                @SamsonIdowu
