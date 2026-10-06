@@ -204,6 +204,16 @@ def build(repo):
         except Exception:
             metrics = None
 
+    services = []
+    spath = os.path.join(ROOT, "config", "services.yaml")
+    if os.path.exists(spath):
+        services = [l.strip()[2:].strip() for l in open(spath, encoding="utf-8")
+                    if l.strip().startswith("- ") and not l.strip().startswith("#")]
+    planner_lessons = []
+    lpath = os.path.join(ROOT, "learning", "lessons", "planner.md")
+    if os.path.exists(lpath):
+        planner_lessons = [l[2:].strip() for l in open(lpath, encoding="utf-8") if l.startswith("- ")][:40]
+
     lessons = {}
     for a in ("planner", "tester", "reviewer"):
         path = os.path.join(ROOT, "learning", "lessons", f"{a}.md")
@@ -223,6 +233,7 @@ def build(repo):
         "runs": run_rows[:40],
         "agents": agents, "waiting": waiting,
         "plans": plans, "metrics": metrics, "lessons": lessons,
+        "services": services, "planner_lessons": planner_lessons,
         "workflows": {wf: latest(wf) for wf in ("validate", "assign", "dispatch", "fallback", "learn", "dashboard-data")},
     }
     # The dashboard stores the snapshot as one document, capped at 256 KiB. Trim the oldest

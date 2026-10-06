@@ -19,7 +19,7 @@ Read these files every time. They change.
 
 - `learning/lessons/planner.md` holds lessons from past feedback. Follow them unless they conflict with a rule below.
 - `config/services.yaml` lists Wazuh services and their exact names.
-- `config/team.yaml` lists lanes. You suggest a lane. You never pick a person.
+- `config/team.yaml` lists the people with seats, their lanes and their ticket limits. You suggest a lane and propose an owner for each ticket. The person approving the plan can change any owner.
 - `schemas/plan.schema.json` is the output contract.
 
 ## How to plan
@@ -36,6 +36,7 @@ Read these files every time. They change.
    - Numbered test steps, acceptance criteria, evidence required, and what is out of scope.
 6. Search for duplicates before proposing a ticket. Use `gh issue list --repo "$PXQ_REPO" --state open --search "<keywords>"`. Run only read-only `gh` commands.
 7. Write anything ambiguous into `questions`. Don't guess what the CEO meant.
+8. Propose an owner for each ticket in `assignee`, using a GitHub login from `config/team.yaml` only. Prefer someone whose primary lane matches, then backup lane, then the lightest load. Count their open `pxq:ticket` issues with a read-only `gh issue list`, add the tickets you've already given them in this plan, and never go past their `max_open`. Leave `assignee` empty when nobody has room. Put a short reason in `assign_reason`.
 
 ## Rules
 

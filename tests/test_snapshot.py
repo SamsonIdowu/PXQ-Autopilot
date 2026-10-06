@@ -65,6 +65,8 @@ checks = [
     ("validate status", (s["workflows"]["validate"] or {}).get("conclusion") == "success"),
     ("missing labels listed", "stage:approved" in s["labels"]["missing"]),
     ("hash present", len(s["hash"]) == 16),
+    ("service names listed", "Wazuh indexer" in s["services"]),
+    ("planner lessons listed", len(s["planner_lessons"]) >= 1),
 ]
 fails = 0
 for name, ok in checks:
