@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PXQ owner feedback",
+  "type": "object",
+  "required": ["ticket", "owner", "decision", "test_type", "agent_versions", "findings", "missed"],
+  "properties": {
+    "ticket": { "type": "string" },
+    "owner": { "type": "string" },
+    "date": { "type": "string" },
+    "decision": { "enum": ["approved", "changes"] },
+    "test_type": { "type": "string" },
+    "agent": { "enum": ["cloud", "local"] },
+    "agent_versions": {
+      "type": "object",
+      "properties": { "tester": { "type": "string" }, "reviewer": { "type": "string" }, "skill": { "type": "string" } }
+    },
+    "reviewer_verdict": { "enum": ["pass", "fix-presentation", "rework"] },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "agent_severity", "tag"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "service": { "type": "string" },
+          "agent_severity": { "enum": ["S1", "S2", "S3", "S4"] },
+          "tag": { "enum": ["confirmed", "false-positive", "wrong-severity", "duplicate", "unclear"] },
+          "owner_severity": { "enum": ["S1", "S2", "S3", "S4"] },
+          "reason": { "type": "string" },
+          "duplicate_of": { "type": "string" }
+        }
+      }
+    },
+    "missed": { "type": "array", "items": { "type": "object", "properties": { "type": { "type": "string" }, "service": { "type": "string" }, "note": { "type": "string" } } } }
+  }
+}

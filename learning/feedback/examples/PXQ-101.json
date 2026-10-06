@@ -1,0 +1,7 @@
+{"ticket":"PXQ-101","owner":"samson","date":"2026-10-06","decision":"approved","test_type":"install","agent":"cloud",
+ "agent_versions":{"tester":"1.0.0","reviewer":"1.0.0","skill":"test-install@1.0.0"},"reviewer_verdict":"pass",
+ "findings":[
+  {"id":"F1","type":"docs-product-mismatch","service":"Wazuh server","agent_severity":"S2","tag":"confirmed"},
+  {"id":"F2","type":"clarity","service":"Wazuh dashboard","agent_severity":"S3","tag":"confirmed"},
+  {"id":"F3","type":"error-handling","service":"Wazuh server","agent_severity":"S3","tag":"wrong-severity","owner_severity":"S2","reason":"Blocks first install for anyone with a web server already running"}],
+ "missed":[]}

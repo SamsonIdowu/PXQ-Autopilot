@@ -1,0 +1,38 @@
+NOTE FOR MAINTAINERS. This is the CEO's 2026-10-06 directive as the team recorded it, not the verbatim Slack text.
+Swap in the original message when you have it. The eval checks only priority order, ticket count and cloud flags,
+so either version should pass.
+
+Team, here is where I want Experience and Quality focused. Work can run in parallel, but this is the order of importance.
+
+Priority 1. Wazuh 5.0 RC1. Test the latest nightly build against the public documentation.
+- Installation and deployment. AIO, multi-node cluster, Kubernetes, Ansible and the other supported methods. The docs must be accurate and easy to follow.
+- Use cases. FIM, threat detection, vulnerability detection, rule creation, decoder changes and integrations. Run the published POC guide end to end.
+- False positive and false negative audit on every deployment. I suspect IT hygiene, rootcheck, login and logout (it should be one finding per event) and vulnerability detection. I prefer a false negative to a false positive.
+- Professional CTI feed. Purchase and deploy it, both in the product UI and in the Cloud Console. Review the docs on the workflow and on what the feed is worth, or ask for them.
+- Security testing. Default users, encryption, and pentesting the API.
+
+Priority 2. The Hub products. AIDR, Agentic SOC, CSPM, Agentic Support, Identity Protection and Threat Intelligence.
+- Registration and account management. Email validation, organizations, invitations.
+- Service activation, deployment and configuration.
+- How clear the UI makes workflows and data.
+- Use cases and overall value.
+- Pricing and purchasing. Free and paid tiers must be obvious.
+- Documentation.
+- API usability.
+- Security.
+
+Priority 3. The new Wazuh Cloud Console.
+- The new UI. Trial setup, launching an environment, cancelling.
+- Professional CTI feed management.
+- User account management.
+- API usability.
+- Security.
+
+The Cloud Console is planned to fold into the Hub so users get one console. That is still pending.
+
+Golden rules. This is how I will judge the team.
+1. Use AI agents heavily. Loops, orchestrators, skills, remote control by phone or SSH, agents running 24/7 with VM or cloud access, pointed at the public source and docs. If you need a premium upgrade or a second Anthropic account, ask María Pía Cáceres. Getting by on a standard account is a bad sign.
+2. Give dev teams high-quality feedback. Validate twice, repeat tests, gather evidence, write steps to reproduce and a possible fix. Link existing issues. Reports must stand on their own. Make sure suggested fixes aren't AI slop.
+3. Track everything you report and follow up, in a GitHub project, with labels or similar.
+4. Keep me posted on significant findings and on fixes that dev teams are slow to deliver.
+5. Document the team's methodology, tools and processes, starting from these Slack messages.

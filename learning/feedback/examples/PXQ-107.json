@@ -1,0 +1,7 @@
+{"ticket":"PXQ-107","owner":"mauricio","date":"2026-10-06","decision":"changes","test_type":"fp-audit","agent":"cloud",
+ "agent_versions":{"tester":"1.0.0","reviewer":"1.0.0","skill":"test-detection@1.0.0"},"reviewer_verdict":"rework",
+ "findings":[
+  {"id":"F1","type":"alert-noise","service":"Wazuh server","agent_severity":"S2","tag":"confirmed"},
+  {"id":"F2","type":"alert-noise","service":"Wazuh server","agent_severity":"S3","tag":"false-positive","reason":"Expected one-time alert during agent enrolment"},
+  {"id":"F3","type":"alert-noise","service":"Wazuh indexer","agent_severity":"S3","tag":"false-positive","reason":"Expected one-time alert during agent enrolment"}],
+ "missed":[{"type":"alert-noise","service":"Wazuh server","note":"Vulnerability findings for packages shipped with the default install"}]}

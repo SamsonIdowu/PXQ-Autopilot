@@ -1,0 +1,24 @@
+# Exact Wazuh service names for tickets and report titles.
+# Confirm these with Product before the first real run.
+wazuh_5:
+  - Wazuh server
+  - Wazuh server API
+  - Wazuh indexer
+  - Wazuh dashboard
+  - Wazuh agent
+  - Wazuh documentation
+  - Wazuh CTI feed
+hub:
+  - Wazuh Hub accounts
+  - Wazuh Hub billing
+  - Wazuh Hub documentation
+  - Wazuh Hub API
+  - AIDR
+  - Agentic SOC
+  - CSPM
+  - Agentic Support
+  - Identity Protection
+  - Threat Intelligence
+cloud:
+  - Wazuh Cloud Console
+  - Wazuh Cloud Console API

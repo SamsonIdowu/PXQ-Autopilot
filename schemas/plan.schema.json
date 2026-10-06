@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PXQ plan",
+  "type": "object",
+  "required": ["directive_id", "workstreams", "tickets", "questions"],
+  "properties": {
+    "directive_id": { "type": "string", "pattern": "^DIR-\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+$" },
+    "workstreams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "name", "priority", "deliverables"],
+        "properties": {
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "priority": { "type": "integer", "minimum": 1 },
+          "deliverables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["code", "title", "done_when"],
+              "properties": { "code": { "type": "string" }, "title": { "type": "string" }, "done_when": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "tickets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "deliverable", "title", "services", "test_type", "lane", "needs_cloud", "steps", "acceptance", "evidence", "out_of_scope"],
+        "properties": {
+          "key": { "type": "string" },
+          "deliverable": { "type": "string" },
+          "title": { "type": "string", "maxLength": 90 },
+          "services": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "test_type": { "enum": ["install", "detection", "fp-audit", "web-journey", "api-security", "docs"] },
+          "lane": { "enum": ["learn-discover", "buy-onboard", "use-operate"] },
+          "needs_cloud": { "type": "boolean" },
+          "persona": { "type": "string" },
+          "start_point": { "type": "string" },
+          "docs_urls": { "type": "array", "items": { "type": "string" } },
+          "steps": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "acceptance": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "evidence": { "type": "array", "items": { "type": "string" } },
+          "out_of_scope": { "type": "array", "items": { "type": "string" } },
+          "depends_on": { "type": "array", "items": { "type": "string" } },
+          "possible_duplicates": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "questions": { "type": "array", "items": { "type": "string" } }
+  }
+}

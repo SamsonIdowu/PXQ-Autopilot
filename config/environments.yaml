@@ -1,0 +1,9 @@
+# Test environment templates. "agents" says where each can run.
+templates:
+  ubuntu-24.04-aio:        { agents: [cloud, local], local_cmd: "multipass launch 24.04 --name pxq-aio --cpus 4 --memory 8G --disk 40G" }
+  ubuntu-24.04-docker:     { agents: [cloud, local], local_cmd: "multipass launch 24.04 --name pxq-docker --cpus 4 --memory 8G --disk 40G" }
+  ansible-control:         { agents: [cloud, local] }
+  rhel9-cluster-x3:        { agents: [cloud] }
+  k3s-cluster:             { agents: [cloud] }
+  windows-agent-host:      { agents: [cloud] }
+  hardened-baseline:       { agents: [cloud] }

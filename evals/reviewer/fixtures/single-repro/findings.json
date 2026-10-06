@@ -1,0 +1,3 @@
+[{"id":"F1","title":"The quickstart command in step 4 fails on a clean host","type":"docs-product-mismatch","severity":"S2","service":"Wazuh server",
+  "expected":"The install finishes","actual":"The command exits with an error","steps":["Create a fresh Ubuntu 24.04 VM","Run step 4 from the quickstart"],
+  "evidence":["evidence/step-04.log"],"repro_count":1,"confidence":"medium"}]

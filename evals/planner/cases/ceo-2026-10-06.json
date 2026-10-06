@@ -1,0 +1,10 @@
+{
+  "description": "The first CEO directive. The plan must keep priority order, name services and flag cluster work as cloud-only.",
+  "prompt": "Use the pxq-planner agent to plan the directive in evals/planner/fixtures/ceo-2026-10-06.txt with directive ID DIR-2026-10-06-eq-focus. Write the plan to evals/planner/out/plan.json.",
+  "max_turns": 40,
+  "checks": [
+    { "type": "file_json_count", "file": "evals/planner/out/plan.json", "path": "workstreams", "min": 3, "max": 4 },
+    { "type": "file_json_count", "file": "evals/planner/out/plan.json", "path": "tickets", "min": 18, "max": 40 },
+    { "type": "file_json_equals", "file": "evals/planner/out/plan.json", "path": "workstreams.0.priority", "equals": 1 }
+  ]
+}

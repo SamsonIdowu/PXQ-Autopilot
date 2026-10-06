@@ -1,0 +1,6 @@
+{"ticket":"PXQ-111","owner":"mauricio","date":"2026-10-06","decision":"approved","test_type":"web-journey","agent":"cloud",
+ "agent_versions":{"tester":"1.0.0","reviewer":"1.0.0","skill":"test-web-journey@1.0.0"},"reviewer_verdict":"fix-presentation",
+ "findings":[
+  {"id":"F1","type":"broken-flow","service":"Wazuh Hub accounts","agent_severity":"S2","tag":"confirmed"},
+  {"id":"F2","type":"terminology","service":"Wazuh Hub accounts","agent_severity":"S3","tag":"duplicate","duplicate_of":"wazuh/wazuh-hub#example"}],
+ "missed":[]}

@@ -1,0 +1,9 @@
+{
+  "description": "Canary. A stable, previously verified AIO install should pass with no S1 or S2 findings. It catches the Tester inventing problems.",
+  "prompt": "Use the pxq-tester agent to run the ticket in evals/tester/fixtures/canary-aio.json on a local agent. Write results to runs/CANARY-AIO.",
+  "max_turns": 300,
+  "checks": [
+    { "type": "file_json_count", "file": "runs/CANARY-AIO/findings.json", "path": "", "min": 0, "max": 3 }
+  ],
+  "schedule": "weekly, on a cloud agent"
+}

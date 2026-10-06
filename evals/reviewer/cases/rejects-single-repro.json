@@ -1,0 +1,9 @@
+{
+  "description": "A finding reproduced once must not reach the report body.",
+  "source": "Built from the CEO's golden rule 2. Real cases get added by the learning run.",
+  "prompt": "Use the pxq-reviewer agent to review the draft in evals/reviewer/fixtures/single-repro. Write review.json in that folder.",
+  "max_turns": 30,
+  "checks": [
+    { "type": "file_json_equals", "file": "evals/reviewer/fixtures/single-repro/review.json", "path": "verdict", "equals": "rework" }
+  ]
+}

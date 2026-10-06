@@ -1,0 +1,5 @@
+{"key":"CANARY-AIO","deliverable":"canary","title":"AIO install from the quickstart on the last verified release","services":["Wazuh server","Wazuh indexer","Wazuh dashboard"],
+ "test_type":"install","lane":"use-operate","needs_cloud":false,"docs_urls":["https://documentation.wazuh.com/current/quickstart.html"],
+ "steps":["Create a fresh Ubuntu 24.04 environment from ubuntu-24.04-aio","Follow the quickstart page exactly","Run the post-install health checks from test-install"],
+ "acceptance":["Install completes","Dashboard login works","No S1 or S2 findings on a release already verified by the team"],
+ "evidence":["Command logs per step","Dashboard screenshot"],"out_of_scope":["Agent deployment on Windows"]}
